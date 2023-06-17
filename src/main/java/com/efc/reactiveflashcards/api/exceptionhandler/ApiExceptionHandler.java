@@ -15,6 +15,7 @@ import org.springframework.core.annotation.Order;
 import org.springframework.core.io.buffer.DefaultDataBufferFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.support.WebExchangeBindException;
 import org.springframework.web.server.MethodNotAllowedException;
 import org.springframework.web.server.ResponseStatusException;
@@ -106,6 +107,7 @@ public class ApiExceptionHandler implements WebExceptionHandler {
                     return GENERIC_BAD_REQUEST.getMessage();
                 })
                 .map(message -> buildError(BAD_REQUEST, message))
+                .flatMap(response -> buildParamErrorMessage(response, ex))
                 .doFirst(() -> log.error("==== WebExchangeBindException", ex))
                 .flatMap(problemResponse -> writeResponse(exchange, problemResponse));
     }
@@ -177,7 +179,8 @@ public class ApiExceptionHandler implements WebExceptionHandler {
                                                          final WebExchangeBindException ex) {
         return Flux.fromIterable(ex.getAllErrors())
                 .map(objectError -> ErrorFieldResponse.builder()
-                        .field(objectError.getObjectName())
+                        .field(objectError instanceof FieldError fieldError
+                                ? fieldError.getField() : objectError.getObjectName())
                         .message(messageSource.getMessage(objectError, LocaleContextHolder.getLocale()))
                 .build())
                 .collectList()
