@@ -19,7 +19,7 @@ public class BaseErrorMessage {
     private final String key;
     private String[] params;
 
-    private BaseErrorMessage params(final String... params) {
+    public BaseErrorMessage params(final String... params) {
         this.params = ArrayUtils.clone(params);
         return this;
     }
