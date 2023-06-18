@@ -3,7 +3,9 @@ package com.efc.reactiveflashcards.api.controller;
 import com.efc.reactiveflashcards.api.controller.request.UserRequest;
 import com.efc.reactiveflashcards.api.controller.response.UserResponse;
 import com.efc.reactiveflashcards.api.mapper.UserMapper;
+import com.efc.reactiveflashcards.core.validation.MongoId;
 import com.efc.reactiveflashcards.domain.service.UserService;
+import com.efc.reactiveflashcards.domain.service.query.UserQueryService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
@@ -23,6 +25,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 public class UserController {
 
     private final UserService userService;
+    private final UserQueryService userQueryService;
     private final UserMapper userMapper;
 
     @PostMapping(consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
@@ -34,5 +37,11 @@ public class UserController {
                 .map(userMapper::toResponse);
     }
 
-
+    @GetMapping(produces = APPLICATION_JSON_VALUE, value = "{id}")
+    public Mono<UserResponse> findById(@PathVariable("id") @Valid @MongoId(message = "{userController.id}")
+                                           final String id) {
+        return userQueryService.findById(id)
+                .doFirst(() -> log.info("==== Finding user with id: {}", id))
+                .map(userMapper::toResponse);
+    }
 }
