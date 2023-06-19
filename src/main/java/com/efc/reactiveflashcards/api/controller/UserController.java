@@ -15,6 +15,7 @@ import reactor.core.publisher.Mono;
 import javax.validation.Valid;
 
 import static org.springframework.http.HttpStatus.CREATED;
+import static org.springframework.http.HttpStatus.OK;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @Validated
@@ -33,15 +34,22 @@ public class UserController {
     public Mono<UserResponse> save(@Valid @RequestBody final UserRequest request) {
         return userService
                 .save(userMapper.toDocument(request))
-                .doFirst(() -> log.info("==== Saving a user with follow data {}", request))
+                .doFirst(() -> log.info("==== saving user with follow data {}", request))
                 .map(userMapper::toResponse);
     }
 
     @GetMapping(produces = APPLICATION_JSON_VALUE, value = "{id}")
-    public Mono<UserResponse> findById(@PathVariable("id") @Valid @MongoId(message = "{userController.id}")
-                                           final String id) {
+    public Mono<UserResponse> findById(@PathVariable @Valid @MongoId(message = "{userController.id}") final String id) {
         return userQueryService.findById(id)
-                .doFirst(() -> log.info("==== Finding user with id: {}", id))
+                .doFirst(() -> log.info("==== finding user with id: {}", id))
+                .map(userMapper::toResponse);
+    }
+
+    @PutMapping(consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE, value = "{id}")
+    public Mono<UserResponse> update(@PathVariable @Valid @MongoId(message = "{userController.id}") final String id,
+                                    @Valid @RequestBody final UserRequest request) {
+        return userService.update(userMapper.toDocument(request, id))
+                .doFirst(() -> log.info("==== updating user with follow info [body: {}, id: {}]", request, id))
                 .map(userMapper::toResponse);
     }
 }
