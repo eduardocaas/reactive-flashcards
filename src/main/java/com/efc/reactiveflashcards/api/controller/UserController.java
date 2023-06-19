@@ -14,8 +14,7 @@ import reactor.core.publisher.Mono;
 
 import javax.validation.Valid;
 
-import static org.springframework.http.HttpStatus.CREATED;
-import static org.springframework.http.HttpStatus.OK;
+import static org.springframework.http.HttpStatus.*;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @Validated
@@ -51,5 +50,12 @@ public class UserController {
         return userService.update(userMapper.toDocument(request, id))
                 .doFirst(() -> log.info("==== updating user with follow info [body: {}, id: {}]", request, id))
                 .map(userMapper::toResponse);
+    }
+
+    @DeleteMapping(value = "{id}")
+    @ResponseStatus(NO_CONTENT)
+    public Mono<Void> delete(@PathVariable @Valid @MongoId(message = "{userController.id}") final String id) {
+        return userService.delete(id)
+                .doFirst(() -> log.info("==== deleting user with follow id: {}", id));
     }
 }
