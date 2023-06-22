@@ -5,6 +5,7 @@ import lombok.Builder;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.util.Set;
 
@@ -17,6 +18,7 @@ public record DeckRequest(@NotBlank
                           @JsonProperty("description")
                           String description,
                           @Valid
+                          @NotNull
                           @Size(min = 3)
                           @JsonProperty("cards")
                           Set<CardRequest> cards) {
