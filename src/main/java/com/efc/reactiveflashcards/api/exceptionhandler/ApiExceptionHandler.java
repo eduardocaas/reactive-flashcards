@@ -1,5 +1,6 @@
 package com.efc.reactiveflashcards.api.exceptionhandler;
 
+import com.efc.reactiveflashcards.domain.exception.EmailAlreadyUsedException;
 import com.efc.reactiveflashcards.domain.exception.NotFoundException;
 import com.efc.reactiveflashcards.domain.exception.ReactiveFlashcardsException;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -30,6 +31,8 @@ public class ApiExceptionHandler implements WebExceptionHandler {
     @Override
     public Mono<Void> handle(ServerWebExchange exchange, Throwable ex) {
         return Mono.error(ex)
+                .onErrorResume(EmailAlreadyUsedException.class, e ->
+                        new EmailAlreadyUsedHandler(mapper).handlerException(exchange, e))
                 .onErrorResume(MethodNotAllowedException.class, e ->
                         new MethodNotAllowedHandler(mapper).handlerException(exchange, e))
                 .onErrorResume(NotFoundException.class, e ->
