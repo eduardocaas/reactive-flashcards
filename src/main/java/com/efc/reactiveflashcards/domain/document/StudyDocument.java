@@ -25,4 +25,8 @@ public record StudyDocument(@Id
 
     @Builder(toBuilder = true)
     public StudyDocument { }
+
+    public void addQuestion(final Question question) {
+        questions.add(question);
+    }
 }
