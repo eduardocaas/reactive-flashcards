@@ -1,5 +1,7 @@
 package com.efc.reactiveflashcards.domain.document;
 
+import lombok.Builder;
+
 import java.time.OffsetDateTime;
 
 public record Question(String asked,
@@ -7,4 +9,7 @@ public record Question(String asked,
                        String answered,
                        OffsetDateTime answeredIn,
                        String expected) {
+
+    @Builder(toBuilder = true)
+    public Question { }
 }
