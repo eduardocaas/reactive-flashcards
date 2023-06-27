@@ -15,6 +15,7 @@ import java.util.Set;
 public interface StudyDomainMapper {
 
     StudyCard toStudyCard(final Card card);
+
     default Question generateRandomQuestion(Set<StudyCard> cards) {
         var values = new ArrayList<>(cards);
         var random = new Random();
