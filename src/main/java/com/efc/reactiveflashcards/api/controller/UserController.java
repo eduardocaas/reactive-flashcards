@@ -24,38 +24,38 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @AllArgsConstructor
 public class UserController {
 
-    private final UserService userService;
-    private final UserQueryService userQueryService;
-    private final UserMapper userMapper;
+    private final UserService service;
+    private final UserQueryService queryService;
+    private final UserMapper mapper;
 
     @PostMapping(consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
     @ResponseStatus(CREATED)
     public Mono<UserResponse> save(@Valid @RequestBody final UserRequest request) {
-        return userService
-                .save(userMapper.toDocument(request))
+        return service
+                .save(mapper.toDocument(request))
                 .doFirst(() -> log.info("==== saving user with follow data {}", request))
-                .map(userMapper::toResponse);
+                .map(mapper::toResponse);
     }
 
     @GetMapping(produces = APPLICATION_JSON_VALUE, value = "{id}")
     public Mono<UserResponse> findById(@PathVariable @Valid @MongoId(message = "{userController.id}") final String id) {
-        return userQueryService.findById(id)
+        return queryService.findById(id)
                 .doFirst(() -> log.info("==== finding user with id: {}", id))
-                .map(userMapper::toResponse);
+                .map(mapper::toResponse);
     }
 
     @PutMapping(consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE, value = "{id}")
     public Mono<UserResponse> update(@PathVariable @Valid @MongoId(message = "{userController.id}") final String id,
                                     @Valid @RequestBody final UserRequest request) {
-        return userService.update(userMapper.toDocument(request, id))
+        return service.update(mapper.toDocument(request, id))
                 .doFirst(() -> log.info("==== updating user with follow info [body: {}, id: {}]", request, id))
-                .map(userMapper::toResponse);
+                .map(mapper::toResponse);
     }
 
     @DeleteMapping(value = "{id}")
     @ResponseStatus(NO_CONTENT)
     public Mono<Void> delete(@PathVariable @Valid @MongoId(message = "{userController.id}") final String id) {
-        return userService.delete(id)
+        return service.delete(id)
                 .doFirst(() -> log.info("==== deleting user with follow id: {}", id));
     }
 }

@@ -25,31 +25,31 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @AllArgsConstructor
 public class DeckController {
 
-    private final DeckService deckService;
-    private final DeckQueryService deckQueryService;
-    private final DeckMapper deckMapper;
+    private final DeckService service;
+    private final DeckQueryService queryService;
+    private final DeckMapper mapper;
 
     @GetMapping(produces = APPLICATION_JSON_VALUE)
     public Flux<DeckResponse> findAll() {
-        return deckQueryService.findAll()
+        return queryService.findAll()
                 .doFirst(() -> log.info("==== finding all decks"))
-                .map(deckMapper::toResponse);
+                .map(mapper::toResponse);
     }
 
     @GetMapping(produces = APPLICATION_JSON_VALUE, value = "{id}")
     public Mono<DeckResponse> findById(@PathVariable @Valid @MongoId(message = "{deckController.id}") final String id) {
-        return deckQueryService.findById(id)
+        return queryService.findById(id)
                 .doFirst(() -> log.info("==== finding deck with id: {}", id))
-                .map(deckMapper::toResponse);
+                .map(mapper::toResponse);
     }
 
     @PostMapping(consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
     @ResponseStatus(CREATED)
     public Mono<DeckResponse> save(@Valid @RequestBody final DeckRequest request) {
-        return deckService
-                .save(deckMapper.toDocument(request))
+        return service
+                .save(mapper.toDocument(request))
                 .doFirst(() -> log.info("==== saving a deck with follow data {}", request))
-                .map(deckMapper::toResponse);
+                .map(mapper::toResponse);
     }
 
 
