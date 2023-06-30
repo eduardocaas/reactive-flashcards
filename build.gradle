@@ -37,9 +37,10 @@ dependencies {
 
 	compileOnly 'org.projectlombok:lombok'
 
-	annotationProcessor "org.mapstruct:mapstruct-processor:$mapstructVersion"
-	annotationProcessor 'org.projectlombok:lombok'
+	annotationProcessor "org.mapstruct:mapstruct-processor:1.5.5.Final"
 	annotationProcessor 'org.projectlombok:lombok-mapstruct-binding:0.2.0'
+	annotationProcessor 'org.projectlombok:lombok'
+
 	
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'de.flapdoodle.embed:de.flapdoodle.embed.mongo'
