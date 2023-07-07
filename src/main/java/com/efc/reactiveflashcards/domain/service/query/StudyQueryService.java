@@ -20,7 +20,7 @@ public class StudyQueryService {
     private final StudyRepository studyRepository;
 
     public Mono<StudyDocument> findPendingStudyUserIdAndDeckId(final String userId, final String deckId) {
-        return studyRepository.findByUserIdAndCompleteTrueAndStudyDeck_DeckId(userId, deckId)
+        return studyRepository.findByUserIdAndCompleteFalseAndStudyDeck_DeckId(userId, deckId)
                 .doFirst(() -> log.info("==== try to get pending study with userId {} and deckId {}", userId, deckId))
                 .filter(Objects::nonNull)
                 .switchIfEmpty(Mono.defer(() ->
