@@ -34,7 +34,7 @@ public class StudyService {
         return verifyStudy(document)
                 .then(userQueryService.findById(document.userId()))
                 .flatMap(user -> deckQueryService.findById(document.studyDeck().deckId()))
-                .flatMap(deck -> getCards(document, deck.cards()))
+                .flatMap(deck -> fillDeckStudyCards(document, deck.cards()))
                 .map(study -> study.toBuilder()
                         .question(studyDomainMapper.generateRandomQuestion(study.studyDeck().cards())).build())
                 .doFirst(() -> log.info("==== generating a first random question"))
@@ -42,7 +42,7 @@ public class StudyService {
                 .doOnSuccess(study -> log.info("==== study saved {}", study));
     }
 
-    private Mono<StudyDocument> getCards(final StudyDocument document, final Set<Card> cards) {
+    private Mono<StudyDocument> fillDeckStudyCards(final StudyDocument document, final Set<Card> cards) {
         return Flux.fromIterable(cards)
                 .doFirst(() -> log.info("==== copy cards to new study"))
                 .map(studyDomainMapper::toStudyCard)
