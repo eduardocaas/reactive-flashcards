@@ -1,5 +1,6 @@
 package com.efc.reactiveflashcards.api.exceptionhandler;
 
+import com.efc.reactiveflashcards.domain.exception.DeckInStudyException;
 import com.efc.reactiveflashcards.domain.exception.EmailAlreadyUsedException;
 import com.efc.reactiveflashcards.domain.exception.NotFoundException;
 import com.efc.reactiveflashcards.domain.exception.ReactiveFlashcardsException;
@@ -31,6 +32,8 @@ public class ApiExceptionHandler implements WebExceptionHandler {
     @Override
     public Mono<Void> handle(ServerWebExchange exchange, Throwable ex) {
         return Mono.error(ex)
+                .onErrorResume(DeckInStudyException.class, e ->
+                        new DeckInStudyHandler(mapper).handlerException(exchange, e))
                 .onErrorResume(EmailAlreadyUsedException.class, e ->
                         new EmailAlreadyUsedHandler(mapper).handlerException(exchange, e))
                 .onErrorResume(MethodNotAllowedException.class, e ->
