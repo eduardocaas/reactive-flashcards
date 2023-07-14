@@ -3,7 +3,9 @@ package com.efc.reactiveflashcards.api.controller;
 import com.efc.reactiveflashcards.api.controller.request.StudyRequest;
 import com.efc.reactiveflashcards.api.controller.response.QuestionResponse;
 import com.efc.reactiveflashcards.api.mapper.StudyMapper;
+import com.efc.reactiveflashcards.core.validation.MongoId;
 import com.efc.reactiveflashcards.domain.service.StudyService;
+import com.efc.reactiveflashcards.domain.service.query.StudyQueryService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
@@ -23,6 +25,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 public class StudyController {
 
     private final StudyService service;
+    private final StudyQueryService queryService;
     private final StudyMapper mapper;
 
     @PostMapping(consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
@@ -30,7 +33,13 @@ public class StudyController {
     public Mono<QuestionResponse> start(@Valid @RequestBody final StudyRequest request) {
         return service.start(mapper.toDocument(request))
                 .doFirst(() -> log.info("==== try to create a study with follow request {}", request))
-                .map(document -> mapper.toResponse(document.getLastQuestionPending()));
+                .map(document -> mapper.toResponse(document.getLastQuestionPending(), document.id()));
+    }
+
+    @GetMapping(produces = APPLICATION_JSON_VALUE, value = "{id}")
+    public Mono<QuestionResponse> getCurrentQuestion(@Valid @PathVariable @MongoId(message = "{}") final String id) {
+        return queryService.getLastPendingQuestion(id)
+                .map(question -> mapper.toResponse(question, id));
     }
 
 }
