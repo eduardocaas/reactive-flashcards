@@ -3,10 +3,10 @@ package com.efc.reactiveflashcards.domain.mapper;
 import com.efc.reactiveflashcards.domain.document.Card;
 import com.efc.reactiveflashcards.domain.document.Question;
 import com.efc.reactiveflashcards.domain.document.StudyCard;
+import com.efc.reactiveflashcards.domain.document.StudyDocument;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
-import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Random;
 import java.util.Set;
@@ -24,9 +24,17 @@ public interface StudyDomainMapper {
     }
 
     @Mapping(target = "asked", source = "front")
-    @Mapping(target = "askedIn", expression = "java(java.time.OffsetDateTime.now())")
     @Mapping(target = "answered", ignore = true)
     @Mapping(target = "answeredIn", ignore = true)
     @Mapping(target = "expected", source = "back")
     Question toQuestion(final StudyCard card);
+
+    default StudyDocument answer(final StudyDocument document, final String answer) {
+        var currentQuestion = document.getLastPendingQuestion();
+        var questions = document.questions();
+        var currentIndexQuestion = questions.indexOf(currentQuestion);
+        currentQuestion = currentQuestion.toBuilder().answered(answer).build();
+        questions.set(currentIndexQuestion, currentQuestion);
+        return document.toBuilder().questions(questions).build();
+    }
 }
