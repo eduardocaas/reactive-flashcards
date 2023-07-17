@@ -39,21 +39,13 @@ public record Question(String asked,
 
         public QuestionBuilder asked(final String asked){
             this.asked = asked;
-            return this;
-        }
-
-        public QuestionBuilder askedIn(final OffsetDateTime askedIn){
-            this.askedIn = askedIn;
+            this.askedIn = OffsetDateTime.now();
             return this;
         }
 
         public QuestionBuilder answered(final String answered){
             this.answered = answered;
-            return this;
-        }
-
-        public QuestionBuilder answeredIn(final OffsetDateTime answeredIn){
-            this.answeredIn = answeredIn;
+            this.answeredIn = OffsetDateTime.now();
             return this;
         }
 

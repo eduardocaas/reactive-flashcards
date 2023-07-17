@@ -1,7 +1,6 @@
 package com.efc.reactiveflashcards.domain.document;
 
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
@@ -38,7 +37,7 @@ public record StudyDocument(@Id
         return new StudyDocumentBuilder(id, userId, complete, studyDeck, questions, createdAt, updatedAt);
     }
 
-    public Question getLastQuestionPending() {
+    public Question getLastPendingQuestion() {
         return questions.stream().filter(question ->
                 Objects.isNull(question.answeredIn())).findFirst().orElseThrow();
     }
