@@ -20,6 +20,10 @@ public record Question(String asked,
         return Objects.isNull(answeredIn);
     }
 
+    public Boolean isCorrect() {
+        return isAnswered() && answered.equals(expected);
+    }
+
     public static QuestionBuilder builder() {
         return new QuestionBuilder();
     }
