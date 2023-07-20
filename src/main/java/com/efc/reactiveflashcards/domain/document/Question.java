@@ -17,6 +17,10 @@ public record Question(String asked,
                        String expected) {
 
     public Boolean isAnswered() {
+        return Objects.nonNull(answeredIn);
+    }
+
+    public Boolean isNotAnswered() {
         return Objects.isNull(answeredIn);
     }
 
